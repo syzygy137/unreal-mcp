@@ -24,7 +24,16 @@ logging.basicConfig(
 logger = logging.getLogger("UnrealMCP")
 
 # Configuration
-UNREAL_HOST = "127.0.0.1"
+import subprocess
+# Auto-detect Windows host IP from WSL, fallback to localhost
+def _get_windows_host():
+    try:
+        result = subprocess.run(["ip", "route", "show", "default"], capture_output=True, text=True)
+        return result.stdout.split()[2]
+    except Exception:
+        return "127.0.0.1"
+
+UNREAL_HOST = _get_windows_host()
 UNREAL_PORT = 55557
 
 class UnrealConnection:
